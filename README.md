@@ -33,11 +33,11 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
 ```
 
 ### Navbar
-![alt text](public\img\navbar.png)
+![alt text](public/img/navbar.png)
 Komponen `navbar` berfungsi untuk navigasi antar halaman. Navbar ini responsif dan menyediakan dropdown menu untuk akses cepat ke profil pengguna. Komponen ini dibangun menggunakan Tailwind CSS dan Alpine.js.
 
 ### Header
-![alt text](public\img\header.png)
+![alt text](public/img/header.png)
 `Header` menampilkan judul halaman yang sedang aktif. Ini menyesuaikan isi berdasarkan halaman yang dikunjungi dan didefinisikan secara dinamis melalui `slot`.
 ```
 <header class="bg-white shadow">
@@ -50,14 +50,14 @@ Komponen `navbar` berfungsi untuk navigasi antar halaman. Navbar ini responsif d
 ## Halaman Web
 
 ### Home
-![alt text](public\img\homepage.png)
+![alt text](public/img/homepage.png)
 Halaman `Home` memberikan pengantar singkat kepada pengunjung tentang website. Komponen ini menggunakan layout utama dan mengisi slot konten dengan teks sambutan.
 
 
 ### Blog
 Menampilkan daftar artikel yang tersedia di website. Setiap artikel dapat diklik untuk membuka halaman detailnya.
 
-![alt text](public\img\blog.png)
+![alt text](public/img/blog.png)
 
 Pada halaman Blog, setiap artikel ditampilkan dengan tautan yang mengarah ke halaman detail berdasarkan slug-nya. Slug adalah string unik yang berfungsi sebagai pengenal URL-friendly untuk setiap artikel. Ketika pengguna mengklik pada judul atau tautan "Read More" di setiap artikel, mereka diarahkan ke URL seperti `/posts/{slug}`, di mana {slug} diisi dengan slug spesifik dari artikel tersebut.
 
@@ -82,10 +82,10 @@ Pada halaman Blog, setiap artikel ditampilkan dengan tautan yang mengarah ke hal
 
 </x-layout>
 ```
-![alt text](public\img\singlepost.png)
+![alt text](public/img/singlepost.png)
 
 ### About
-![alt text](public\img\about.png)
+![alt text](public/img/about.png)
 Halaman `About` memberikan informasi tentang pembuat atau tujuan website. Ini juga mengambil nama dari variabel yang diberikan dan menampilkan dalam konten.
 
 ```html
@@ -97,7 +97,7 @@ Halaman `About` memberikan informasi tentang pembuat atau tujuan website. Ini ju
 ```
 
 ### Contact
-![alt text](public\img\contact.png)
+![alt text](public/img/contact.png)
 Halaman `Contact` menyediakan informasi kontak atau formulir untuk menghubungi pembuat website.
 
 ```html
