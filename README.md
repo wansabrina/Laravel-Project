@@ -130,12 +130,12 @@ Halaman `Contact` menyediakan informasi kontak atau formulir untuk menghubungi p
 ```
 
 ## Teknologi yang digunakan
-- **Laravel 11**: Framework PHP modern untuk pengembangan web yang efisien.
-- **Laragon**: Alat yang memudahkan setup dan manajemen lingkungan pengembangan Laravel di Windows.
-- **PHP**: Bahasa pemrograman untuk scripting server-side dengan dukungan fitur terbaru.
+- **Laravel 11**: Framework PHP modern untuk pengembangan web.
+- **Laragon**: Alat setup dan manajemen lingkungan pengembangan Laravel di Windows.
+- **PHP**: Bahasa pemrograman untuk scripting server-side.
 - **Composer**: Manajer paket yang mengatur dependensi PHP dalam proyek.
-- **Tailwind CSS**: Framework CSS untuk desain antarmuka yang cepat dan responsif.
-- **Alpine.js**: Framework JavaScript ringan untuk penambahan interaktivitas sederhana pada halaman web.
+- **Tailwind CSS**: Framework CSS untuk desain antarmuka.
+- **Alpine.js**: Framework JavaScript untuk penambahan interaktivitas pada web.
 
 ## Langkah-Langkah Menjalankan Proyek Laravel dengan Laragon
 1. **Start Laragon**: Buka Laragon dan klik `Start All` untuk memulai semua layanan seperti Nginx dan MySQL.
