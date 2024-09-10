@@ -1,4 +1,8 @@
-# Dokumentasi UI Komponen Website
+# Tugas Pemrograman Berbasis Kerangka Kerja
+
+| Nama              | NRP        | Kelas  |
+|-------------------|------------|--------|
+| Wan Sabrina Mayzura| 5025211023 | PBKK D |
 
 Proyek ini menggunakan Laravel dan Blade untuk membangun sebuah website dengan komponen UI yang modular. Berikut adalah penjelasan dari setiap komponen dan layout yang digunakan dalam website ini.
 
@@ -72,7 +76,7 @@ Menampilkan daftar artikel yang tersedia di website. Setiap artikel dapat diklik
 
 ![alt text](public/img/blog.png)
 
-Menggunakan direktif @foreach, kode ini mengiterasi melalui setiap item dalam array $posts. Setiap item dalam array ini mewakili satu postingan yang diambil dari database.
+Menggunakan direktif `@foreach`, kode ini mengiterasi melalui setiap item dalam array `$posts`. Setiap item dalam array ini mewakili satu postingan yang diambil dari database.
 
 ```html
 <x-layout>
@@ -96,7 +100,7 @@ Menggunakan direktif @foreach, kode ini mengiterasi melalui setiap item dalam ar
 </x-layout>
 ```
 
-Di dalam loop, slug adalah versi judul postingan yang disederhanakan, umumnya ditulis dengan huruf kecil dan dihubungkan dengan strip (-), yang membuat URL lebih mudah dibaca dan diingat.
+Di dalam loop, `slug` adalah versi judul postingan yang disederhanakan, umumnya ditulis dengan huruf kecil dan dihubungkan dengan strip (-), yang membuat URL lebih mudah dibaca.
 
 ![alt text](public/img/singlepost.png)
 
@@ -128,7 +132,7 @@ Halaman `Contact` menyediakan informasi kontak atau formulir untuk menghubungi p
 ## Teknologi yang digunakan
 - **Laravel 11**: Framework PHP modern untuk pengembangan web yang efisien.
 - **Laragon**: Alat yang memudahkan setup dan manajemen lingkungan pengembangan Laravel di Windows.
-- **PHP (>= 8.2)**: Bahasa pemrograman untuk scripting server-side dengan dukungan fitur terbaru.
+- **PHP**: Bahasa pemrograman untuk scripting server-side dengan dukungan fitur terbaru.
 - **Composer**: Manajer paket yang mengatur dependensi PHP dalam proyek.
 - **Tailwind CSS**: Framework CSS untuk desain antarmuka yang cepat dan responsif.
 - **Alpine.js**: Framework JavaScript ringan untuk penambahan interaktivitas sederhana pada halaman web.
