@@ -1,6 +1,6 @@
 # Dokumentasi UI Komponen Website
 
-Proyek ini menggunakan Laravel untuk membangun sebuah website dengan struktur yang rapi dan komponen UI yang modular. Berikut adalah penjelasan dari setiap komponen dan layout yang digunakan dalam website ini.
+Proyek ini menggunakan Laravel dan Blade untuk membangun sebuah website dengan komponen UI yang modular. Berikut adalah penjelasan dari setiap komponen dan layout yang digunakan dalam website ini.
 
 ## Struktur Komponen
 
