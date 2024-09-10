@@ -39,11 +39,19 @@ Komponen `navbar` berfungsi untuk navigasi antar halaman. Navbar ini responsif d
 
 ![alt text](public/img/dropdown.png)
 
+Komponen x-nav-link membuat tautan navigasi yang aktif sesuai dengan halaman yang sedang dikunjungi. Atribut :active membandingkan URL saat ini dengan target untuk menentukan tautan aktif. 
+```html
+<x-nav-link href="/" :active="request()->is('/')">Home</x-nav-link>
+<x-nav-link href="/posts" :active="request()->is('posts')">Blog</x-nav-link>
+<x-nav-link href="/about" :active="request()->is('about')">About</x-nav-link>
+<x-nav-link href="/contact" :active="request()->is('contact')">Contact</x-nav-link>
+```
+
 ### Header
 ![alt text](public/img/header.png)
 
 `Header` menampilkan judul halaman yang sedang aktif. Ini menyesuaikan isi berdasarkan halaman yang dikunjungi dan didefinisikan secara dinamis melalui `slot`.
-```
+```html
 <header class="bg-white shadow">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold tracking-tight text-gray-900">{{ $slot }}</h1>
@@ -64,7 +72,7 @@ Menampilkan daftar artikel yang tersedia di website. Setiap artikel dapat diklik
 
 ![alt text](public/img/blog.png)
 
-Pada halaman Blog, setiap artikel ditampilkan dengan tautan yang mengarah ke halaman detail berdasarkan slug-nya. Slug adalah string unik yang berfungsi sebagai pengenal URL-friendly untuk setiap artikel. Ketika pengguna mengklik pada judul atau tautan "Read More" di setiap artikel, mereka diarahkan ke URL seperti `/posts/{slug}`, di mana {slug} diisi dengan slug spesifik dari artikel tersebut.
+Menggunakan direktif @foreach, kode ini mengiterasi melalui setiap item dalam array $posts. Setiap item dalam array ini mewakili satu postingan yang diambil dari database.
 
 ```html
 <x-layout>
@@ -87,6 +95,8 @@ Pada halaman Blog, setiap artikel ditampilkan dengan tautan yang mengarah ke hal
 
 </x-layout>
 ```
+
+Di dalam loop, slug adalah versi judul postingan yang disederhanakan, umumnya ditulis dengan huruf kecil dan dihubungkan dengan strip (-), yang membuat URL lebih mudah dibaca dan diingat.
 
 ![alt text](public/img/singlepost.png)
 
@@ -114,3 +124,18 @@ Halaman `Contact` menyediakan informasi kontak atau formulir untuk menghubungi p
     <h3>This is Contact section</h3>
 </x-layout>
 ```
+
+## Teknologi yang digunakan
+- **Laravel 11**: Framework PHP modern untuk pengembangan web yang efisien.
+- **Laragon**: Alat yang memudahkan setup dan manajemen lingkungan pengembangan Laravel di Windows.
+- **PHP (>= 8.2)**: Bahasa pemrograman untuk scripting server-side dengan dukungan fitur terbaru.
+- **Composer**: Manajer paket yang mengatur dependensi PHP dalam proyek.
+- **Tailwind CSS**: Framework CSS untuk desain antarmuka yang cepat dan responsif.
+- **Alpine.js**: Framework JavaScript ringan untuk penambahan interaktivitas sederhana pada halaman web.
+
+## Langkah-Langkah Menjalankan Proyek Laravel dengan Laragon
+1. **Start Laragon**: Buka Laragon dan klik `Start All` untuk memulai semua layanan seperti Nginx dan MySQL.
+2. **Buka Terminal dari Laragon**: Navigasikan ke direktori proyek Anda menggunakan `cd Laravel-Project`.
+3. **Jalankan Server Laravel**: Ketik `php artisan serve` di terminal untuk memulai server pengembangan Laravel.
+4. **Kompilasi Aset**: Jalankan `npm run dev` untuk mengkompilasi aset JavaScript dan Tailwind CSS.
+5. **Buka di Browser**: Akses aplikasi di browser dengan membuka `http://localhost:8000`.
