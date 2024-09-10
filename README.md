@@ -4,7 +4,7 @@
 |-------------------|------------|--------|
 | Wan Sabrina Mayzura| 5025211023 | PBKK D |
 
-Proyek ini menggunakan Laravel dan Blade untuk membangun sebuah website dengan komponen UI yang modular. Berikut adalah penjelasan dari setiap komponen dan layout yang digunakan dalam website ini.
+Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website dengan komponen UI yang modular. Berikut adalah penjelasan dari setiap komponen dan layout yang digunakan dalam website ini.
 
 ## Struktur Komponen
 
