@@ -23,7 +23,7 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 
 ## Daftar Isi
 1. [Section 2 - Blade Templating Engine & Blade Component](#section-2---blade-templating-engine--blade-component)
-2. [Section 3 - Blade Templating Engine & Blade Component](#section-3---blade-templating-engine--blade-component)
+2. [Section 3 - View Data & Model](#section-3---view-data--model)
 
 ## Section 2 - Blade Templating Engine & Blade Component
 
@@ -165,7 +165,7 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     });
     ```
 
-## Section 3 - Blade Templating Engine & Blade Component
+## Section 3 - View Data & Model
 
 ### Blog (Updated)
 
