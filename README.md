@@ -160,3 +160,128 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
         return view('contact', ['title' => 'Contact']);
     });
     ```
+
+## Section 3 - Blade Templating Engine & Blade Component
+
+### Blog (Updated)
+
+Pada halaman blog, daftar artikel yang diambil dari database ditampilkan, dan setiap artikel dapat diklik untuk membuka halaman detailnya.
+
+![Blog](public/img/posts.png)
+
+Pada slot layout untuk page Blog, digunakan direktif `@foreach` untuk mengiterasi setiap item dalam array `$posts`. Setiap item merepresentasikan satu artikel dari database, dengan struktur data yang didefinisikan dalam model `Post`.
+
+```html
+<x-layout>
+    <x-slot:title>{{ $title }}</x-slot:title>
+
+    @foreach ($posts as $post)
+    <article class="py-8 max-w-screen-md border-b border-grey-300">
+        <a href="/posts/{{ $post['slug'] }}" class="hover:underline">
+            <h2 class="mb-1 text-3xl tracking-tight font-bold text-gray-900">{{ $post['title'] }}</h2>
+        </a>
+        <div class="text-base text-gray-500">
+            <a href="#">{{ $post['author'] }}</a> | 1 January 2024
+        </div>
+        <p class="my-4 font-light">
+            {{ Str::limit($post['body'], 120) }}
+        </p>
+        <a href="/posts/{{ $post['slug'] }}" class="font-medium text-blue-500">Read More &raquo;</a>
+    </article>
+    @endforeach
+</x-layout>
+```
+
+Pada loop di atas, `slug` adalah versi sederhana dari judul artikel, yang ditulis dengan huruf kecil dan dihubungkan dengan tanda strip (-). Hal ini memudahkan URL untuk dibaca dan diingat. Penggunaan slug alih-alih ID numerik meningkatkan keamanan dan SEO, karena slug yang diambil dari judul artikel lebih sulit ditebak dan memperbaiki struktur URL.
+
+![Single Post](public/img/singlepost.png)
+
+### Data Access and MVC Architecture
+
+Model `Post` terletak di direktori `App\Models` dan menyediakan metode untuk mengakses data artikel. Pemisahan data ke model ini mengikuti prinsip MVC (Model-View-Controller), di mana `Model` menangani data, `View` menampilkan data, dan `Controller` menghubungkan keduanya. Awalnya, data dapat ditempatkan langsung di dalam file rute (`web.php`), namun memindahkannya ke model memungkinkan kode lebih reusable dan mengoptimalkan pemisahan tanggung jawab.
+
+Isi file `Post.php`
+```php
+<?php 
+
+namespace App\Models;
+use Illuminate\Support\Arr;
+
+class Post
+{
+    public static function all()
+    {
+        return [
+            [
+                'id' => '1',
+                'slug' => 'judul-artikel-1',
+                'title' => 'Judul Artikel 1',
+                'author' => 'Wan Sabrina',
+                'body' => 'Lorem ipsum...'
+            ],
+            [
+                'id' => '2',
+                'slug' => 'judul-artikel-2',
+                'title' => 'Judul Artikel 2',
+                'author' => 'Wan Sabrina',
+                'body' => 'Lorem ipsum...'
+            ],
+        ];
+    }
+}
+```
+Penggunaan `namespace` seperti `namespace App\Models;` membantu dalam mengorganisir kode secara logis dan menghindari konflik nama. Di Laravel, `namespace` memungkinkan kita untuk mengelompokkan kelas yang berhubungan (misalnya model atau controller) ke dalam direktori tertentu yang memudahkan manajemen kode dan autoloading.
+
+Selain itu untuk memisahkan tanggung jawab pengolahan data dari logika routing dan menyederhanakan akses data pada aplikasi, fungsi untuk mengakses masing masing post yang awalnya berada di dalam file routing seperti berikut:
+
+```php
+Route::get('/posts/{slug}', function ($slug) {
+    $post = Arr::first(Post::all(), function ($post) use ($slug) {
+        return $post['slug'] == $slug;
+    });
+
+    return view('post', ['title' => 'Single Post', 'post' => $post]);
+});
+```
+
+Sebaiknya dipindahkan dari rute `web.php` ke dalam class `Post` atau file `Post.php`, seperti ini:
+
+```php
+public static function find($slug) {
+    return Arr::first(static::all(), function ($post) use ($slug) {
+        return $post['slug'] == $slug;
+    });
+}
+```
+
+Selain itu, juga bisa menggunakan arrow function untuk mempersingkat syntax:
+
+```php
+return Arr::first(static::all(), fn ($post) => $post['slug'] == $slug);
+```
+
+Setelah fungsi `find` dipindahkan ke dalam class `Post`, pada routing, bisa dipanggil sebagai berikut:
+
+```php
+Route::get('/posts/{slug}', function ($slug) {
+    $post = Post::find($slug);
+
+    return view('post', ['title' => 'Single Post', 'post' => $post]);
+});
+```
+
+### Menampilkan halaman 404
+![alt text](/public/img/404notfound.png)
+Fungsi `find` dalam model `Post` bertugas mencari artikel berdasarkan `slug` yang diberikan. Jika artikel tidak ditemukan, Laravel akan menampilkan halaman error 404, memberitahukan bahwa sumber yang diminta tidak tersedia atau tidak ditemukan.
+
+```php
+public static function find($slug): array {
+    $post = Arr::first(static::all(), fn ($post) => $post['slug'] == $slug);
+
+    if(!$post) {
+        abort(404); // Memunculkan halaman error 404 jika tidak ada artikel yang cocok
+    }
+
+    return $post;
+}
+```
