@@ -21,6 +21,10 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 4. **Kompilasi Aset**: Jalankan `npm run dev` untuk mengkompilasi aset JavaScript dan Tailwind CSS.
 5. **Buka di Browser**: Akses aplikasi di browser dengan membuka `http://localhost:8000`.
 
+## Daftar Isi
+1. [Section 2 - Blade Templating Engine & Blade Component](#section-2---blade-templating-engine--blade-component)
+2. [Section 3 - Blade Templating Engine & Blade Component](#section-3---blade-templating-engine--blade-component)
+
 ## Section 2 - Blade Templating Engine & Blade Component
 
 ### Layout Utama
@@ -273,7 +277,7 @@ Route::get('/posts/{slug}', function ($slug) {
 ### Menampilkan halaman 404
 ![alt text](/public/img/404notfound.png)
 Fungsi `find` dalam model `Post` bertugas mencari artikel berdasarkan `slug` yang diberikan. Jika artikel tidak ditemukan, Laravel akan menampilkan halaman error 404, memberitahukan bahwa sumber yang diminta tidak tersedia atau tidak ditemukan.
-
+Sehingga pada fungsi `find` ditambahkan kondisi if else sebagai berikut:
 ```php
 public static function find($slug): array {
     $post = Arr::first(static::all(), fn ($post) => $post['slug'] == $slug);
