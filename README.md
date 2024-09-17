@@ -32,6 +32,15 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 2. [Section 4 - Database & Migration | Eloquent ORM & Post Model](#section-4---database--migration--eloquent-orm--post-model)
 
 ## Section 2 - Blade Templating Engine & Blade Component
+#### Daftar Isi
+1. [Layout Utama](#layout-utama)
+   - Navbar
+   - Header
+2. [Halaman Web](#halaman-web)
+   - Home
+   - Blog
+   - About
+   - Contact
 
 ### Layout Utama
 Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website. Layout ini mengintegrasikan komponen-komponen seperti navbar, header, dan main, di mana slot main digunakan sebagai tempat penempatan konten halaman sebenarnya. Slot ini memungkinkan konten yang spesifik untuk masing-masing halaman dapat disisipkan secara dinamis berdasarkan kebutuhan halaman tersebut.
@@ -172,6 +181,12 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     ```
 
 ## Section 3 - View Data & Model
+#### Daftar Isi
+1. [Blog (Updated)](#blog-updated)
+2. [Data Access and MVC Architecture](#data-access-and-mvc-architecture)
+   - Penggunaan namespace
+   - Memindahkan fungsi `find` ke dalam class `Post`
+3. [Menampilkan Halaman 404](#menampilkan-halaman-404)
 
 ### Blog (Updated)
 
@@ -297,6 +312,21 @@ public static function find($slug): array {
 ```
 
 ## Section 4 - Database & Migration | Eloquent ORM & Post Model
+#### Daftar Isi
+1. [Database & Migration](#database--migration)
+   - Konfigurasi Database
+   - Testing Database
+   - Membuat Tabel Baru
+   - Menjalankan Migration
+2. [Eloquent ORM & Post Model](#eloquent-orm--post-model)
+   - Menghubungkan Model dengan Tabel
+   - Menyambungkan Model dan Tabel dengan Nama yang Berbeda
+   - Mengatur Primary Key
+   - Mengganti Fungsi `find` dengan Eloquent Routing
+3. [Menambahkan Data Menggunakan Tinker](#menambahkan-data-menggunakan-tinker)
+   - Menggunakan `created_at` di View
+   - Operasi Lain yang Bisa Dilakukan di Tinker
+4. [Membuat Model Beserta Migration Secara Otomatis](#membuat-model-beserta-migration-secara-otomatis)
 
 ### Database & Migration
 
@@ -519,7 +549,7 @@ Selain memasukkan data, ada berbagai operasi lain yang bisa dilakukan di Tinker,
     $post->save();
     ```
 
-#### Membuat Model Beserta Migration
+#### Membuat Model Beserta Migration Secara Otomatis
 
 Selain membuat model secara manual, kita juga bisa membuat model beserta migration-nya secara otomatis dengan satu perintah. Berikut cara melakukannya:
 
