@@ -24,6 +24,7 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 ## Daftar Isi
 1. [Section 2 - Blade Templating Engine & Blade Component](#section-2---blade-templating-engine--blade-component)
 2. [Section 3 - View Data & Model](#section-3---view-data--model)
+2. [Section 4 - Database & Migration | Eloquent ORM & Post Model](#section-4---database--migration--eloquent-orm--post-model)
 
 ## Section 2 - Blade Templating Engine & Blade Component
 
@@ -288,4 +289,245 @@ public static function find($slug): array {
 
     return $post;
 }
+```
+
+## Section 4 - Database & Migration | Eloquent ORM & Post Model
+
+### Database & Migration
+
+Pada section ini, kita akan mengonfigurasi database menggunakan SQLite atau MySQL.
+
+- **SQLite**: Database berbasis file yang mudah digunakan.
+- **MySQL**: Database server yang lebih kuat dan ideal untuk aplikasi yang lebih kompleks.
+
+#### Konfigurasi Database
+
+Pada file `.env`, jika menggunakan SQLite, konfigurasi database hanya perlu diisi seperti berikut:
+```
+DB_CONNECTION=sqlite
+```
+Jika menggunakan MySQL, hapus bagian yang ditandai sebagai komentar dan isi konfigurasi sebagai berikut:
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pbkk_laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+#### Testing Database
+
+Untuk mengetes kedua jenis database, kita dapat menggunakan `TablePlus`. Tambahkan database baru dan lakukan migration dengan menjalankan perintah `php artisan migrate`. Setelah perintah ini dijalankan, masing-masing database akan berisi tabel-tabel yang telah didefinisikan dalam file migration yang ada di direktori `database` proyek kita.
+
+![Default Migration](public/img/migrationdefault.png)
+
+Pada database `PBKK_SQLite`, database akan otomatis terisi dengan tabel-tabel seperti berikut:
+
+![SQLite Tables](public/img/tabelsqlite.png)
+
+#### Membuat Tabel Baru
+
+Untuk project ini, kita akan menggunakan SQLite karena lebih cocok untuk struktur project yang sederhana. Pada section sebelumnya, kita telah membuat post dengan data yang masih di-hardcode. Sekarang, kita akan membuat tabel baru untuk menyimpan data post ini.
+
+Di terminal, jalankan perintah berikut untuk membuat tabel `create_posts_table`:
+```
+php artisan make:migration create_posts_table
+```
+
+Setelah menjalankan perintah tersebut, file migration baru akan muncul di dalam direktori `database/migrations`. Buka file tersebut dan isi struktur tabelnya seperti ini sesuai dengan struktur data dari model post yang telah dibuat sebelumnya:
+
+```php
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('author');
+            $table->string('slug')->unique();
+            $table->text('body');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('posts');
+    }
+};
+```
+
+#### Menjalankan Migration
+
+Setelah mengedit file migration, jalankan perintah berikut di terminal untuk menjalankan migrasi dan meng-update database:
+```
+php artisan migrate:fresh
+```
+Perintah ini akan menghapus semua tabel yang ada dan menjalankan ulang semua migration, termasuk migration baru yang kita buat.
+
+Setelah menjalankan migration, tabel `posts` akan muncul di dalam database dengan struktur seperti berikut, dan bisa mengisi data/row dari tabel `posts` dengan data yang telah dibuat sebelumnya.
+
+![Posts Table Added](public/img/tablepostsadded.png) 
+
+### Eloquent ORM & Post Model
+Eloquent ORM adalah fitur bawaan Laravel yang memungkinkan kita untuk memetakan tabel di dalam database ke dalam bentuk objek. Setiap tabel di dalam database memiliki model yang berkorespondensi, dan model ini yang akan kita gunakan untuk berinteraksi dengan tabel tersebut. Model ini akan mempermudah kita dalam melakukan berbagai operasi pada database tanpa harus menulis query SQL secara manual.
+
+#### Menghubungkan Model dengan Tabel
+
+Kita sudah memiliki tabel `posts` di dalam database `PBKK_SQLite`, dan sebelumnya kita telah membuat file model `Post.php` di direktori `app/Models`. File tersebut awalnya berisi method statis `all` dan `find` untuk mencari single post berdasarkan slug.
+
+Namun, dengan menggunakan Eloquent ORM, kita bisa langsung menghubungkan model `Post` dengan tabel `posts`. Secara default, Laravel akan otomatis menyambungkan model dengan tabel yang memiliki nama jamak dari model tersebut.
+
+Untuk membuat model `Post` dengan cara yang benar, kita perlu menambahkan `extends Model` agar model tersebut mewarisi perilaku dari Eloquent Model. Caranya cukup dengan menambahkan `use Illuminate\Database\Eloquent\Model` di dalam file `Post.php` dan meng-extend `Model`:
+
+```php
+<?php 
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+
+}
+```
+
+Karena Eloquent Model secara default sudah memiliki fungsi `all` untuk mengambil semua data dan `find` untuk mencari data berdasarkan ID, kita tidak perlu lagi menulis method statis `all` dan `find` secara manual. Kita cukup menggunakan method bawaan dari Eloquent.
+
+#### Menyambungkan Model dan Tabel dengan nama yang berbeda 
+
+Secara default, Laravel akan menyambungkan model `Post` dengan tabel `posts` secara otomatis. Namun, jika nama model berbeda dengan nama tabel, atau nama tabel tidak mengikuti aturan jamak, kita perlu menyambungkan model ke tabel secara eksplisit.
+
+Misalnya, jika tabel yang ingin kita hubungkan dengan model adalah `my_posts`, maka kita bisa menghubungkannya dengan menambahkan properti `$table` pada model:
+
+```php
+class Post extends Model 
+{
+    protected $table = 'my_posts'; 
+}
+```
+
+#### Mengatur Primary Key
+
+Secara default, Eloquent menggunakan kolom `id` sebagai primary key. Jika tabel menggunakan nama kolom primary key yang berbeda, kita dapat mengaturnya menggunakan properti `$primaryKey`:
+
+```php
+class Post extends Model 
+{
+    protected $table = 'my_posts'; 
+    protected $primaryKey = 'posts_id'; 
+} 
+```
+
+### Mengganti Fungsi `find` dengan Eloquent Routing
+
+Di Laravel, secara default, model memiliki fungsi `find` yang mencari data berdasarkan ID. Namun, kita juga bisa menggunakan route model binding untuk mencari data berdasarkan atribut lain seperti `slug`. 
+
+Dengan route model binding, kita bisa langsung mengembalikan instance model yang sesuai dengan kriteria pencarian tertentu tanpa perlu menggunakan fungsi `find` lagi. Berikut adalah cara menggunakannya pada file routing `web.php`:
+
+```php
+Route::get('/posts/{post:slug}', function (Post $post) {
+    // $post = Post::find($slug); // Tidak perlu lagi
+
+    return view('post', ['title' => 'Single Post', 'post' => $post]);
+});
+```
+
+Dalam contoh di atas, kita menggunakan route model binding dengan menambahkan `{post:slug}`. Dengan ini, Laravel akan otomatis mencari post berdasarkan kolom `slug` dan mengembalikan instance `Post` yang sesuai. Kita tidak perlu lagi memanggil fungsi `find` secara manual. 
+
+### Menambahkan Data Menggunakan Tinker
+Sebelum kita bisa menambahkan data ke tabel `posts` melalui Tinker, kita perlu menambahkan properti `$fillable` di model `Post`. Properti ini menentukan field mana saja yang dapat diisi melalui metode mass assignment, seperti `create`:
+
+```php
+class Post extends Model
+{
+    protected $fillable = ['title', 'author', 'slug', 'body'];
+}
+```
+
+`$fillable` digunakan untuk melindungi aplikasi dari *mass assignment vulnerabilities*. Dengan mendefinisikan field yang dapat diisi, kita memastikan bahwa hanya field tersebut yang bisa diisi melalui mass assignment.
+
+#### Memasukkan Data dengan Tinker
+
+Untuk memasukkan data ke dalam tabel `posts` menggunakan Tinker, ikuti langkah-langkah berikut:
+
+- Buka terminal dan jalankan perintah berikut untuk masuk ke Tinker:
+    ```bash
+    php artisan tinker
+    ```
+
+- Setelah masuk ke Tinker, jalankan perintah berikut untuk membuat data baru:
+   ![image](public/img/datamasuk.png)
+
+Data akan dimasukkan ke dalam tabel `posts`, dan field `created_at` serta `updated_at` akan diisi secara otomatis oleh Eloquent.
+
+#### Menggunakan `created_at` di View
+
+Karena Eloquent secara otomatis mengisi field `created_at`, kita bisa menggunakan data ini untuk menampilkan tanggal kapan post dibuat di view kita. Contoh penggunaan di view:
+
+Menggunakan format tanggal tertentu:
+```php
+<a href="#">{{ $post['author'] }}</a> | {{ $post->created_at->format('j F Y')}}
+```
+
+Atau menggunakan waktu relatif:
+```php
+<a href="#">{{ $post['author'] }}</a> | {{ $post->created_at->diffForHumans()}}
+```
+
+## Operasi Lain yang Bisa Dilakukan di Tinker
+
+Selain memasukkan data, ada berbagai operasi lain yang bisa dilakukan di Tinker, seperti:
+
+- **Mengambil Semua Data**:
+    ```php
+    App\Models\Post::all();
+    ```
+
+- **Mengambil Data Pertama**:
+    ```php
+    App\Models\Post::first();
+    ```
+
+- **Mengambil Data Berdasarkan ID**:
+    ```php
+    App\Models\Post::find(1);
+    ```
+
+- **Menghapus Data**:
+    ```php
+    $post = App\Models\Post::find(1);
+    $post->delete();
+    ```
+
+- **Mengupdate Data**:
+    ```php
+    $post = App\Models\Post::find(1);
+    $post->title = 'Updated Title';
+    $post->save();
+    ```
+
+### Membuat Model Beserta Migration
+
+Selain membuat model secara manual, kita juga bisa membuat model beserta migration-nya secara otomatis dengan satu perintah. Berikut cara melakukannya:
+
+- Buka terminal dan jalankan perintah berikut:
+    ```bash
+    php artisan make:model Post -m
+    ```
+
+Perintah ini akan membuat model `Post` dan juga migration untuk tabel `posts`. Kita dapat menemukan file migration yang baru dibuat di direktori `database/migrations`.
+
+Setelah mendefinisikan struktur tabel `posts`, jalankan migration untuk membuat tabel di database:
+```bash
+php artisan migrate
 ```
