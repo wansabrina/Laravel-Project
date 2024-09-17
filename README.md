@@ -6,20 +6,25 @@
 
 Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website dengan komponen UI yang modular. Berikut adalah penjelasan dari setiap komponen dan layout yang digunakan dalam website ini.
 
-### Teknologi yang digunakan
+<details>
+<summary> Teknologi yang digunakan </summary>
+
 - **Laravel 11**: Framework PHP modern untuk pengembangan web.
 - **Laragon**: Alat setup dan manajemen lingkungan pengembangan Laravel di Windows.
 - **PHP**: Bahasa pemrograman untuk scripting server-side.
 - **Composer**: Manajer paket yang mengatur dependensi PHP dalam proyek.
 - **Tailwind CSS**: Framework CSS untuk desain antarmuka.
 - **Alpine.js**: Framework JavaScript untuk penambahan interaktivitas pada web.
+</details>
+<details>
+<summary>Langkah-Langkah Menjalankan Proyek Laravel dengan Laragon</summary>
 
-### Langkah-Langkah Menjalankan Proyek Laravel dengan Laragon
 1. **Start Laragon**: Buka Laragon dan klik `Start All` untuk memulai semua layanan seperti Nginx dan MySQL.
 2. **Buka Terminal dari Laragon**: Navigasikan ke direktori proyek Anda menggunakan `cd Laravel-Project`.
 3. **Jalankan Server Laravel**: Ketik `php artisan serve` di terminal untuk memulai server pengembangan Laravel.
 4. **Kompilasi Aset**: Jalankan `npm run dev` untuk mengkompilasi aset JavaScript dan Tailwind CSS.
 5. **Buka di Browser**: Akses aplikasi di browser dengan membuka `http://localhost:8000`.
+</details>
 
 ## Daftar Isi
 1. [Section 2 - Blade Templating Engine & Blade Component](#section-2---blade-templating-engine--blade-component)
@@ -428,7 +433,7 @@ class Post extends Model
 } 
 ```
 
-### Mengganti Fungsi `find` dengan Eloquent Routing
+#### Mengganti Fungsi `find` dengan Eloquent Routing
 
 Di Laravel, secara default, model memiliki fungsi `find` yang mencari data berdasarkan ID. Namun, kita juga bisa menggunakan route model binding untuk mencari data berdasarkan atribut lain seperti `slug`. 
 
@@ -444,7 +449,7 @@ Route::get('/posts/{post:slug}', function (Post $post) {
 
 Dalam contoh di atas, kita menggunakan route model binding dengan menambahkan `{post:slug}`. Dengan ini, Laravel akan otomatis mencari post berdasarkan kolom `slug` dan mengembalikan instance `Post` yang sesuai. Kita tidak perlu lagi memanggil fungsi `find` secara manual. 
 
-### Menambahkan Data Menggunakan Tinker
+#### Menambahkan Data Menggunakan Tinker
 Sebelum kita bisa menambahkan data ke tabel `posts` melalui Tinker, kita perlu menambahkan properti `$fillable` di model `Post`. Properti ini menentukan field mana saja yang dapat diisi melalui metode mass assignment, seperti `create`:
 
 ```php
@@ -455,8 +460,6 @@ class Post extends Model
 ```
 
 `$fillable` digunakan untuk melindungi aplikasi dari *mass assignment vulnerabilities*. Dengan mendefinisikan field yang dapat diisi, kita memastikan bahwa hanya field tersebut yang bisa diisi melalui mass assignment.
-
-#### Memasukkan Data dengan Tinker
 
 Untuk memasukkan data ke dalam tabel `posts` menggunakan Tinker, ikuti langkah-langkah berikut:
 
@@ -484,7 +487,7 @@ Atau menggunakan waktu relatif:
 <a href="#">{{ $post['author'] }}</a> | {{ $post->created_at->diffForHumans()}}
 ```
 
-## Operasi Lain yang Bisa Dilakukan di Tinker
+#### Operasi Lain yang Bisa Dilakukan di Tinker
 
 Selain memasukkan data, ada berbagai operasi lain yang bisa dilakukan di Tinker, seperti:
 
@@ -516,7 +519,7 @@ Selain memasukkan data, ada berbagai operasi lain yang bisa dilakukan di Tinker,
     $post->save();
     ```
 
-### Membuat Model Beserta Migration
+#### Membuat Model Beserta Migration
 
 Selain membuat model secara manual, kita juga bisa membuat model beserta migration-nya secara otomatis dengan satu perintah. Berikut cara melakukannya:
 
