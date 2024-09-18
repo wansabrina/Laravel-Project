@@ -561,11 +561,11 @@ php artisan migrate
 ```
 
 ## Section 5
-1. [Model Factories](#model--factories)
+1. [Model Factories](#model-factories)
    - Menggunakan Factories di Laravel
    - Membuat Factory Sendiri
    - Menjalankan Migration
-2. [Eloquent Relationship](#eloquent--relationship)
+2. [Eloquent Relationship](#eloquent-relationship)
    - Menyesuaikan PostFactory untuk Relasi
    - Menambahkan Relasi di Model User dan Post
    - Menggunakan Relasi di Tinker
