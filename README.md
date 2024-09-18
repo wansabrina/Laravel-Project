@@ -27,11 +27,12 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 </details>
 
 ## Daftar Isi
-1. [Section 2 - Blade Templating Engine & Blade Component](#section-2---blade-templating-engine--blade-component)
-2. [Section 3 - View Data & Model](#section-3---view-data--model)
-2. [Section 4 - Database & Migration | Eloquent ORM & Post Model](#section-4---database--migration--eloquent-orm--post-model)
+1. [Section 2](#section-2)
+2. [Section 3](#section-3)
+3. [Section 4](#section-4)
+3. [Section 5](#section-5)
 
-## Section 2 - Blade Templating Engine & Blade Component
+## Section 2
 #### Daftar Isi
 1. [Layout Utama](#layout-utama)
    - Navbar
@@ -180,17 +181,17 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     });
     ```
 
-## Section 3 - View Data & Model
+## Section 3
 #### Daftar Isi
-1. [Blog (Updated)](#blog-updated)
-2. [Data Access and MVC Architecture](#data-access-and-mvc-architecture)
+1. [View Data](#view-data)
+2. [Model](#model)
    - Penggunaan namespace
    - Memindahkan fungsi `find` ke dalam class `Post`
-3. [Menampilkan Halaman 404](#menampilkan-halaman-404)
+   - Menampilkan Halaman 404
 
-### Blog (Updated)
+### View Data
 
-Pada halaman blog, daftar artikel yang diambil dari database ditampilkan, dan setiap artikel dapat diklik untuk membuka halaman detailnya.
+Pada halaman blog, akan ditampilkan daftar artikel yang diambil dari data dummy/array `post` yang telah didefinisikan sementara di file routing `web.php`, dan setiap artikel dapat diklik untuk membuka halaman detailnya.
 
 ![Blog](public/img/posts.png)
 
@@ -221,7 +222,7 @@ Pada loop di atas, `slug` adalah versi sederhana dari judul artikel, yang dituli
 
 ![Single Post](public/img/singlepost.png)
 
-### Data Access and MVC Architecture
+### Model
 
 Model `Post` terletak di direktori `App\Models` dan menyediakan metode untuk mengakses data artikel. Pemisahan data ke model ini mengikuti prinsip MVC (Model-View-Controller), di mana `Model` menangani data, `View` menampilkan data, dan `Controller` menghubungkan keduanya. Awalnya, data dapat ditempatkan langsung di dalam file rute (`web.php`), namun memindahkannya ke model memungkinkan kode lebih reusable dan mengoptimalkan pemisahan tanggung jawab.
 
@@ -311,11 +312,10 @@ public static function find($slug): array {
 }
 ```
 
-## Section 4 - Database & Migration | Eloquent ORM & Post Model
+## Section 4
 #### Daftar Isi
 1. [Database & Migration](#database--migration)
    - Konfigurasi Database
-   - Testing Database
    - Membuat Tabel Baru
    - Menjalankan Migration
 2. [Eloquent ORM & Post Model](#eloquent-orm--post-model)
@@ -323,10 +323,9 @@ public static function find($slug): array {
    - Menyambungkan Model dan Tabel dengan Nama yang Berbeda
    - Mengatur Primary Key
    - Mengganti Fungsi `find` dengan Eloquent Routing
-3. [Menambahkan Data Menggunakan Tinker](#menambahkan-data-menggunakan-tinker)
-   - Menggunakan `created_at` di View
+   - Menambahkan Data Menggunakan Tinker
    - Operasi Lain yang Bisa Dilakukan di Tinker
-4. [Membuat Model Beserta Migration Secara Otomatis](#membuat-model-beserta-migration-secara-otomatis)
+   - Membuat Model Beserta Migration Secara Otomatis
 
 ### Database & Migration
 
@@ -350,8 +349,6 @@ DB_DATABASE=pbkk_laravel
 DB_USERNAME=root
 DB_PASSWORD=
 ```
-
-#### Testing Database
 
 Untuk mengetes kedua jenis database, kita dapat menggunakan `TablePlus`. Tambahkan database baru dan lakukan migration dengan menjalankan perintah `php artisan migrate`. Setelah perintah ini dijalankan, masing-masing database akan berisi tabel-tabel yang telah didefinisikan dalam file migration yang ada di direktori `database` proyek kita.
 
@@ -503,8 +500,6 @@ Untuk memasukkan data ke dalam tabel `posts` menggunakan Tinker, ikuti langkah-l
 
 Data akan dimasukkan ke dalam tabel `posts`, dan field `created_at` serta `updated_at` akan diisi secara otomatis oleh Eloquent.
 
-#### Menggunakan `created_at` di View
-
 Karena Eloquent secara otomatis mengisi field `created_at`, kita bisa menggunakan data ini untuk menampilkan tanggal kapan post dibuat di view kita. Contoh penggunaan di view:
 
 Menggunakan format tanggal tertentu:
@@ -563,4 +558,81 @@ Perintah ini akan membuat model `Post` dan juga migration untuk tabel `posts`. K
 Setelah mendefinisikan struktur tabel `posts`, jalankan migration untuk membuat tabel di database:
 ```bash
 php artisan migrate
+```
+
+## Section 5
+1. [Model Factories](#model--factories)
+   - Menggunakan Factories di Laravel
+   - Membuat Factory Sendiri
+   - Menjalankan Migration
+2. [Eloquent Relationship](#eloquent--relationship)
+   - 
+
+### Model Factories
+Model Factories di Laravel adalah fitur yang memungkinkan kita untuk secara otomatis menggenerate data palsu (dummy) untuk model kita. Ini sangat berguna untuk testing dan seeding database dengan cepat tanpa harus memasukkan data secara manual.
+
+#### Menggunakan Factories di Laravel
+Di dalam direktori `database/factories`, Laravel secara otomatis membuat file `UserFactory.php`. File ini berisi definisi bagaimana data dummy untuk model User akan di-generate. Contoh isinya seperti berikut:
+
+```php
+public function definition(): array
+{
+    return [
+        'name' => fake()->name(),
+        'email' => fake()->unique()->safeEmail(),
+        'email_verified_at' => now(),
+        'password' => static::$password ??= Hash::make('password'),
+        'remember_token' => Str::random(10),
+    ];
+}
+```
+
+- **`fake()`** adalah fungsi bawaan Laravel yang menggunakan library `Faker` untuk membuat data palsu yang tampak nyata, seperti nama, email, dan sebagainya.
+- `fake()->name()` akan menghasilkan nama acak.
+- `fake()->unique()->safeEmail()` akan menghasilkan email yang unik dan valid.
+- `now()` mengisi field `email_verified_at` dengan waktu saat ini.
+- `Hash::make('password')` membuat hash untuk string 'password'.
+
+Untuk menggunakan UserFactory dan membuat data dengan Tinker bisa menjalankan commmand seperti berikut:
+1. Buat satu user dengan factory:
+    ```php
+    App\Models\User::factory()->create();
+    ```
+2. Buat 10 user sekaligus:
+    ```php
+    App\Models\User::factory()->count(10)->create();
+    ```
+3. Menggunakan fungsi `unverified()` untuk membuat user tanpa `email_verified_at`:
+    ```php
+    App\Models\User::factory()->unverified()->create();
+    ```
+
+#### Membuat Factory Sendiri
+Untuk membuat factory khusus untuk model lain, bisa membuatnya dengan perintah artisan:
+```bash
+php artisan make:factory PostFactory
+```
+
+Kemudian, isikan struktur factory sesuai dengan struktur tabel `posts`. Contohnya seperti berikut ini:
+
+```php
+public function definition(): array
+{
+    return [
+        'title' => fake()->sentence(6),
+        'author' => fake()->name(),
+        'slug' => Str::slug(fake()->sentence()),
+        'body' => fake()->text()
+    ];
+}
+```
+- `fake()->sentence(6)`: Menghasilkan sebuah kalimat yang terdiri dari sekitar 6 kata untuk judul.
+- `fake()->name()`: Menghasilkan nama acak untuk penulis.
+- `Str::slug(fake()->sentence())`: Menghasilkan slug unik berdasarkan kalimat acak.
+- `fake()->text()`: Menghasilkan teks acak untuk isi posting.
+
+Secara default, faker menggunakan data dalam bahasa Inggris (US). Namun, jika ingin menghasilkan data dalam bahasa atau format lokal tertentu, seperti Indonesia, bisa mengubahnya di file `.env`:
+
+```env
+APP_FAKER_LOCALE=id_ID
 ```
