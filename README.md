@@ -27,12 +27,12 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 </details>
 
 ## Daftar Isi
-1. [Section 2](#section-2)
-2. [Section 3](#section-3)
-3. [Section 4](#section-4)
-3. [Section 5](#section-5)
+1. [Section 2](#2️⃣-section-2)
+2. [Section 3](#3️⃣-section-3)
+3. [Section 4](#4️⃣-section-4)
+3. [Section 5](#5️⃣-section-5)
 
->## Section 2
+## 2️⃣ Section 2
 #### Daftar Isi
 1. [Layout Utama](#layout-utama)
    - Navbar
@@ -43,7 +43,7 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
    - About
    - Contact
 
-### Layout Utama
+>### Layout Utama
 Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website. Layout ini mengintegrasikan komponen-komponen seperti navbar, header, dan main, di mana slot main digunakan sebagai tempat penempatan konten halaman sebenarnya. Slot ini memungkinkan konten yang spesifik untuk masing-masing halaman dapat disisipkan secara dinamis berdasarkan kebutuhan halaman tersebut.
 
 ```html
@@ -98,7 +98,7 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     </header>
     ```
 
-### Halaman Web
+>### Halaman Web
 
 - #### Home
     ![alt text](public/img/homepage.png)
@@ -181,7 +181,7 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     });
     ```
 
->## Section 3
+## 3️⃣ Section 3
 #### Daftar Isi
 1. [View Data](#view-data)
 2. [Model](#model)
@@ -189,7 +189,7 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
    - Memindahkan fungsi `find` ke dalam class `Post`
    - Menampilkan Halaman 404
 
-### View Data
+>### View Data
 
 Pada halaman blog, akan ditampilkan daftar artikel yang diambil dari data dummy/array `post` yang telah didefinisikan sementara di file routing `web.php`, dan setiap artikel dapat diklik untuk membuka halaman detailnya.
 
@@ -222,7 +222,7 @@ Pada loop di atas, `slug` adalah versi sederhana dari judul artikel, yang dituli
 
 ![Single Post](public/img/singlepost.png)
 
-### Model
+>### Model
 
 Model `Post` terletak di direktori `App\Models` dan menyediakan metode untuk mengakses data artikel. Pemisahan data ke model ini mengikuti prinsip MVC (Model-View-Controller), di mana `Model` menangani data, `View` menampilkan data, dan `Controller` menghubungkan keduanya. Awalnya, data dapat ditempatkan langsung di dalam file rute (`web.php`), namun memindahkannya ke model memungkinkan kode lebih reusable dan mengoptimalkan pemisahan tanggung jawab.
 
@@ -296,7 +296,7 @@ Route::get('/posts/{slug}', function ($slug) {
 });
 ```
 
-### Menampilkan halaman 404
+#### Menampilkan halaman 404
 ![alt text](/public/img/404notfound.png)
 Fungsi `find` dalam model `Post` bertugas mencari artikel berdasarkan `slug` yang diberikan. Jika artikel tidak ditemukan, Laravel akan menampilkan halaman error 404, memberitahukan bahwa sumber yang diminta tidak tersedia atau tidak ditemukan.
 Sehingga pada fungsi `find` ditambahkan kondisi if else sebagai berikut:
@@ -312,7 +312,7 @@ public static function find($slug): array {
 }
 ```
 
->## Section 4
+## 4️⃣ Section 4
 #### Daftar Isi
 1. [Database & Migration](#database--migration)
    - Konfigurasi Database
@@ -327,7 +327,7 @@ public static function find($slug): array {
    - Operasi Lain yang Bisa Dilakukan di Tinker
    - Membuat Model Beserta Migration Secara Otomatis
 
-### Database & Migration
+>### Database & Migration
 
 Pada section ini, kita akan mengonfigurasi database menggunakan SQLite atau MySQL.
 
@@ -409,7 +409,7 @@ Setelah menjalankan migration, tabel `posts` akan muncul di dalam database denga
 
 ![Posts Table Added](public/img/tablepostsadded.png) 
 
-### Eloquent ORM & Post Model
+>### Eloquent ORM & Post Model
 Eloquent ORM adalah fitur bawaan Laravel yang memungkinkan kita untuk memetakan tabel di dalam database ke dalam bentuk objek. Setiap tabel di dalam database memiliki model yang berkorespondensi, dan model ini yang akan kita gunakan untuk berinteraksi dengan tabel tersebut. Model ini akan mempermudah kita dalam melakukan berbagai operasi pada database tanpa harus menulis query SQL secara manual.
 
 #### Menghubungkan Model dengan Tabel
@@ -560,7 +560,7 @@ Setelah mendefinisikan struktur tabel `posts`, jalankan migration untuk membuat 
 php artisan migrate
 ```
 
->## Section 5
+## 5️⃣ Section 5
 1. [Model Factories](#model-factories)
    - Menggunakan Factories di Laravel
    - Membuat Factory Sendiri
@@ -580,7 +580,7 @@ php artisan migrate
    - Menambahkan Route Categories
 4. [Database Seeder](#database-seeder)
 
-### Model Factories
+>### Model Factories
 Model Factories di Laravel adalah fitur yang memungkinkan kita untuk secara otomatis menggenerate data palsu (dummy) untuk model kita. Ini sangat berguna untuk testing dan seeding database dengan cepat tanpa harus memasukkan data secara manual.
 
 #### Menggunakan Factories di Laravel
@@ -649,7 +649,7 @@ Secara default, faker menggunakan data dalam bahasa Inggris (US). Namun, jika in
 APP_FAKER_LOCALE=id_ID
 ```
 
-### Eloquent Relationship
+>### Eloquent Relationship
 Eloquent Relationships memungkinkan kita untuk mendefinisikan relasi antar tabel di dalam model menggunakan Eloquent ORM. Ini mempermudah pengelolaan dan pengambilan data yang terkait, seperti ketika kita ingin mengetahui siapa penulis dari sebuah postingan atau apa saja artikel yang pernah ditulis oleh seorang pengguna.
 
 Untuk menghubungkan tabel `posts` dengan `users`, kita harus menambahkan kolom `author_id` ke dalam tabel `posts`. Ini dilakukan di file migration:
@@ -773,7 +773,7 @@ return [
 Sehingga pada url masing masing author, terlihat sebagai berikut:
 ![alt text](/public/img/authorpostwithuname.png) 
 
-### Post Category
+>### Post Category
 
 #### Membuat Model, Migrasi, dan Factory untuk Category
 Untuk membuat model `Category` beserta file migrasi dan factory-nya secara bersamaan, kita dapat menggunakan perintah artisan berikut:
@@ -897,4 +897,4 @@ Route::get('/categories/{category:slug}', function (Category $category) {
 });
 ``` 
 
-### Database Seeder
+>### Database Seeder
