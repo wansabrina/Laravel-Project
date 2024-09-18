@@ -35,13 +35,13 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 ## 2️⃣ Section 2
 #### Daftar Isi
 1. [Layout Utama](#layout-utama)
-   - Navbar
-   - Header
+   - [Navbar](#navbar)
+   - [Header](#header)
 2. [Halaman Web](#halaman-web)
-   - Home
-   - Blog
-   - About
-   - Contact
+   - [Home](#home)
+   - [Blog](#blog)
+   - [About](#about)
+   - [Contact](#contact)
 
 >### Layout Utama
 Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website. Layout ini mengintegrasikan komponen-komponen seperti navbar, header, dan main, di mana slot main digunakan sebagai tempat penempatan konten halaman sebenarnya. Slot ini memungkinkan konten yang spesifik untuk masing-masing halaman dapat disisipkan secara dinamis berdasarkan kebutuhan halaman tersebut.
@@ -183,13 +183,11 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
 
 ## 3️⃣ Section 3
 #### Daftar Isi
-1. [View Data](#view-data)
+1. [View Data and UI Update (Blog)](#view-data-and-ui-update-blog)
 2. [Model](#model)
-   - Penggunaan namespace
-   - Memindahkan fungsi `find` ke dalam class `Post`
-   - Menampilkan Halaman 404
+   - [Menampilkan Halaman 404](#menampilkan-halaman-404)
 
->### View Data
+>### View Data and UI Update (Blog)
 
 Pada halaman blog, akan ditampilkan daftar artikel yang diambil dari data dummy/array `post` yang telah didefinisikan sementara di file routing `web.php`, dan setiap artikel dapat diklik untuk membuka halaman detailnya.
 
@@ -315,17 +313,17 @@ public static function find($slug): array {
 ## 4️⃣ Section 4
 #### Daftar Isi
 1. [Database & Migration](#database--migration)
-   - Konfigurasi Database
-   - Membuat Tabel Baru
-   - Menjalankan Migration
+   - [Konfigurasi Database](#konfigurasi-database)
+   - [Membuat Tabel Baru](#membuat-tabel-baru)
+   - [Menjalankan Migration](#menjalankan-migration)
 2. [Eloquent ORM & Post Model](#eloquent-orm--post-model)
-   - Menghubungkan Model dengan Tabel
-   - Menyambungkan Model dan Tabel dengan Nama yang Berbeda
-   - Mengatur Primary Key
-   - Mengganti Fungsi `find` dengan Eloquent Routing
-   - Menambahkan Data Menggunakan Tinker
-   - Operasi Lain yang Bisa Dilakukan di Tinker
-   - Membuat Model Beserta Migration Secara Otomatis
+   - [Menghubungkan Model dengan Tabel](#menghubungkan-model-dengan-tabel)
+   - [Menyambungkan Model dan Tabel dengan Nama yang Berbeda](#menyambungkan-model-dan-tabel-dengan-nama-yang-berbeda)
+   - [Mengatur Primary Key](#mengatur-primary-key)
+   - [Mengganti Fungsi `find` dengan Eloquent Routing](#mengganti-fungsi-find-dengan-eloquent-routing)
+   - [Menambahkan Data Menggunakan Tinker](#menambahkan-data-menggunakan-tinker)
+   - [Operasi Lain yang Bisa Dilakukan di Tinker](#operasi-lain-yang-bisa-dilakukan-di-tinker)
+   - [Membuat Model Beserta Migration Secara Otomatis](#membuat-model-beserta-migration-secara-otomatis)
 
 >### Database & Migration
 
@@ -562,22 +560,23 @@ php artisan migrate
 
 ## 5️⃣ Section 5
 1. [Model Factories](#model-factories)
-   - Menggunakan Factories di Laravel
-   - Membuat Factory Sendiri
-   - Menjalankan Migration
-2. [Eloquent Relationship](#eloquent-relationship)
-   - Menyesuaikan PostFactory untuk Relasi
-   - Menambahkan Relasi di Model User dan Post
-   - Menggunakan Relasi di Tinker
-   - Memperbaiki Tampilan di View Post
-3. [Post Category](#post-category)
-   - Membuat Model, Migrasi, dan Factory untuk Category
-   - Mengubah File Migrasi Category
-   - Mengubah File Migrasi Post
-   - Menambahkan Relasi Antar Model
-   - Membuat Factory untuk Category dan Post
-   - Menghubungkan Kategori di Tampilan Post
-   - Menambahkan Route Categories
+   - [Menggunakan Factories di Laravel](#menggunakan-factories-di-laravel)
+   - [Membuat Factory Sendiri](#membuat-factory-sendiri)
+   - [Menjalankan Migration](#menjalankan-migration)
+2. [Eloquent Relationship & UI Update (Author Page)](#eloquent-relationship--ui-update-author-page)
+   - [Menyesuaikan PostFactory untuk Relasi](#menyesuaikan-postfactory-untuk-relasi)
+   - [Menambahkan Relasi di Model User dan Post](#menambahkan-relasi-di-model-user-dan-post)
+   - [Menggunakan Relasi di Tinker](#menggunakan-relasi-di-tinker)
+   - [Memperbaiki Tampilan di View Post](#memperbaiki-tampilan-di-view-post)
+   - [Menambahkan Page/Route Author](#menambahkan-pageroute-author)
+3. [Post Category & UI Update (Categories Page)](#post-category--ui-update-categories-page)
+   - [Membuat Model, Migrasi, dan Factory untuk Category](#membuat-model-migrasi-dan-factory-untuk-category)
+   - [Mengubah File Migrasi Category](#mengubah-file-migrasi-category)
+   - [Mengubah File Migrasi Post](#mengubah-file-migrasi-post)
+   - [Menambahkan Relasi Antar Model](#menambahkan-relasi-antar-model)
+   - [Membuat Factory untuk Category dan Post](#membuat-factory-untuk-category-dan-post)
+   - [Menghubungkan Kategori di Tampilan Post](#menghubungkan-kategori-di-tampilan-post)
+   - [Menambahkan Route Categories](#menambahkan-route-categories)
 4. [Database Seeder](#database-seeder)
 
 >### Model Factories
@@ -649,7 +648,7 @@ Secara default, faker menggunakan data dalam bahasa Inggris (US). Namun, jika in
 APP_FAKER_LOCALE=id_ID
 ```
 
->### Eloquent Relationship
+>### Eloquent Relationship & UI Update (Author Page)
 Eloquent Relationships memungkinkan kita untuk mendefinisikan relasi antar tabel di dalam model menggunakan Eloquent ORM. Ini mempermudah pengelolaan dan pengambilan data yang terkait, seperti ketika kita ingin mengetahui siapa penulis dari sebuah postingan atau apa saja artikel yang pernah ditulis oleh seorang pengguna.
 
 Untuk menghubungkan tabel `posts` dengan `users`, kita harus menambahkan kolom `author_id` ke dalam tabel `posts`. Ini dilakukan di file migration:
@@ -730,6 +729,7 @@ Untuk menampilkan data relasi di view, kita modifikasi view `posts.blade.php` ag
 <a href="/authors/{{ $post->author->id }}" class="hover:underline">{{ $post->author->name }}</a>
 ``` 
 
+#### Menambahkan Page/Route Author
 Untuk menampilkan semua postingan oleh seorang penulis tertentu, kita tambahkan route baru:
 
 ```php
@@ -773,7 +773,7 @@ return [
 Sehingga pada url masing masing author, terlihat sebagai berikut:
 ![alt text](/public/img/authorpostwithuname.png) 
 
->### Post Category
+>### Post Category & UI Update (Categories Page)
 
 #### Membuat Model, Migrasi, dan Factory untuk Category
 Untuk membuat model `Category` beserta file migrasi dan factory-nya secara bersamaan, kita dapat menggunakan perintah artisan berikut:
