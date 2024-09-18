@@ -576,7 +576,7 @@ php artisan migrate
    - [Menambahkan Relasi Antar Model](#menambahkan-relasi-antar-model)
    - [Membuat Factory untuk Category dan Post](#membuat-factory-untuk-category-dan-post)
    - [Menghubungkan Kategori di Tampilan Post](#menghubungkan-kategori-di-tampilan-post)
-   - [Menambahkan Route Categories](#menambahkan-route-categories)
+   - [Menambahkan Page/Route Category](#menambahkan-pageroute-category)
 4. [Database Seeder](#database-seeder)
 
 >### Model Factories
@@ -888,7 +888,7 @@ Agar kategori ditampilkan pada setiap post di halaman web, kita perlu memperbaru
 </div>
 ```
 
-#### Menambahkan Route Categories
+#### Menambahkan Page/Route Category
 
 ![alt text](/public/img/categoriesroute.png)
 
