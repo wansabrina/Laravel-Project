@@ -890,6 +890,8 @@ Agar kategori ditampilkan pada setiap post di halaman web, kita perlu memperbaru
 
 #### Menambahkan Route Categories
 
+![alt text](/public/img/categoriesroute.png)
+
 Agar kita bisa menavigasi ke halaman kategori tertentu, kita tambahkan rute baru di `web.php` yang digunakan untuk menampilkan semua artikel dalam kategori tertentu berdasarkan `slug`:
 ```php
 Route::get('/categories/{category:slug}', function (Category $category) {
