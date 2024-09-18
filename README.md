@@ -32,7 +32,7 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 3. [Section 4](#section-4)
 3. [Section 5](#section-5)
 
-## Section 2
+>## Section 2
 #### Daftar Isi
 1. [Layout Utama](#layout-utama)
    - Navbar
@@ -181,7 +181,7 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     });
     ```
 
-## Section 3
+>## Section 3
 #### Daftar Isi
 1. [View Data](#view-data)
 2. [Model](#model)
@@ -312,7 +312,7 @@ public static function find($slug): array {
 }
 ```
 
-## Section 4
+>## Section 4
 #### Daftar Isi
 1. [Database & Migration](#database--migration)
    - Konfigurasi Database
@@ -560,7 +560,7 @@ Setelah mendefinisikan struktur tabel `posts`, jalankan migration untuk membuat 
 php artisan migrate
 ```
 
-## Section 5
+>## Section 5
 1. [Model Factories](#model-factories)
    - Menggunakan Factories di Laravel
    - Membuat Factory Sendiri
@@ -578,6 +578,7 @@ php artisan migrate
    - Membuat Factory untuk Category dan Post
    - Menghubungkan Kategori di Tampilan Post
    - Menambahkan Route Categories
+4. [Database Seeder](#database-seeder)
 
 ### Model Factories
 Model Factories di Laravel adalah fitur yang memungkinkan kita untuk secara otomatis menggenerate data palsu (dummy) untuk model kita. Ini sangat berguna untuk testing dan seeding database dengan cepat tanpa harus memasukkan data secara manual.
@@ -895,3 +896,5 @@ Route::get('/categories/{category:slug}', function (Category $category) {
     return view('posts', ['title' => 'Articles in Category: ' . $category->name, 'posts' => $category->posts]);
 });
 ``` 
+
+### Database Seeder
