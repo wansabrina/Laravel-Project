@@ -570,8 +570,14 @@ php artisan migrate
    - Menambahkan Relasi di Model User dan Post
    - Menggunakan Relasi di Tinker
    - Memperbaiki Tampilan di View Post
-3. [Post Category](#post--category)
-   - 
+3. [Post Category](#post-category)
+   - Membuat Model, Migrasi, dan Factory untuk Category
+   - Mengubah File Migrasi Category
+   - Mengubah File Migrasi Post
+   - Menambahkan Relasi Antar Model
+   - Membuat Factory untuk Category dan Post
+   - Menghubungkan Kategori di Tampilan Post
+   - Menambahkan Route Categories
 
 ### Model Factories
 Model Factories di Laravel adalah fitur yang memungkinkan kita untuk secara otomatis menggenerate data palsu (dummy) untuk model kita. Ini sangat berguna untuk testing dan seeding database dengan cepat tanpa harus memasukkan data secara manual.
@@ -796,7 +802,7 @@ public function up(): void
 }
 ```
 
-### Mengubah File Migrasi Post
+#### Mengubah File Migrasi Post
 
 Selanjutnya, kita akan memperbarui migrasi untuk tabel `posts` agar dapat terhubung dengan tabel `categories`. Tambahkan `category_id` sebagai foreign key yang terhubung ke tabel `categories`:
 
@@ -881,7 +887,7 @@ Agar kategori ditampilkan pada setiap post di halaman web, kita perlu memperbaru
 </div>
 ```
 
-### Menambahkan Route Categories
+#### Menambahkan Route Categories
 
 Agar kita bisa menavigasi ke halaman kategori tertentu, kita tambahkan rute baru di `web.php` yang digunakan untuk menampilkan semua artikel dalam kategori tertentu berdasarkan `slug`:
 ```php
