@@ -516,28 +516,28 @@ Atau menggunakan waktu relatif:
 
 Selain memasukkan data, ada berbagai operasi lain yang bisa dilakukan di Tinker, seperti:
 
-- **Mengambil Semua Data**:
+- Mengambil Semua Data:
     ```php
     App\Models\Post::all();
     ```
 
-- **Mengambil Data Pertama**:
+- Mengambil Data Pertama:
     ```php
     App\Models\Post::first();
     ```
 
-- **Mengambil Data Berdasarkan ID**:
+- Mengambil Data Berdasarkan ID:
     ```php
     App\Models\Post::find(1);
     ```
 
-- **Menghapus Data**:
+- Menghapus Data:
     ```php
     $post = App\Models\Post::find(1);
     $post->delete();
     ```
 
-- **Mengupdate Data**:
+- Mengupdate Data:
     ```php
     $post = App\Models\Post::find(1);
     $post->title = 'Updated Title';
@@ -735,3 +735,157 @@ Route::get('/authors/{user}', function (User $user) {
 Sehingga ketika kita mengklik nama author dari sebuah artikel, akan diarahkan ke page sebagai berikut:
 ![alt text](/public/img/authorposts.png)
 
+Agar lebih aman, relasi `User` dengan `Post` dapat ditambahkan `username` pada tabel `users` pada file migrasi tabel user:
+```php
+public function up(): void
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('username')->unique();
+        $table->string('email')->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+        $table->rememberToken();
+        $table->timestamps();
+    });
+}
+```
+
+Tambahkan `username` pada user factory untuk membuat data acak.
+```php
+return [
+    'name' => fake()->name(),
+    'username' => fake()->unique()->username(),
+    'email' => fake()->unique()->safeEmail(),
+    'email_verified_at' => now(),
+    'password' => static::$password ??= Hash::make('password'),
+    'remember_token' => Str::random(10),
+];
+```
+Sehingga pada url masing masing author, terlihat sebagai berikut:
+![alt text](/public/img/authorpostwithuname.png) 
+
+### Post Category
+
+#### Membuat Model, Migrasi, dan Factory untuk Category
+Untuk membuat model `Category` beserta file migrasi dan factory-nya secara bersamaan, kita dapat menggunakan perintah artisan berikut:
+
+```bash
+php artisan make:model Category -mf
+```
+
+Perintah ini akan menghasilkan tiga file sekaligus:
+- Model `Category`
+- File migrasi untuk tabel `categories`
+- Factory `CategoryFactory`
+
+#### Mengubah File Migrasi Category
+
+Setelah membuat file migrasi untuk `categories`, kita perlu mendefinisikan struktur tabelnya. Dalam file migrasi tersebut, tambahkan kolom `name` dan `slug`:
+
+```php
+public function up(): void
+{
+    Schema::create('categories', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('slug')->unique();
+        $table->timestamps();
+    });
+}
+```
+
+### Mengubah File Migrasi Post
+
+Selanjutnya, kita akan memperbarui migrasi untuk tabel `posts` agar dapat terhubung dengan tabel `categories`. Tambahkan `category_id` sebagai foreign key yang terhubung ke tabel `categories`:
+
+```php
+public function up(): void
+{
+    Schema::create('posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->foreignId('author_id')->constrained(
+            table: 'users',
+            indexName: 'posts_author_id'
+        );
+        $table->foreignId('category_id')->constrained(
+            table: 'categories',
+            indexName: 'posts_category_id'
+        );
+        $table->string('slug')->unique();
+        $table->text('body');
+        $table->timestamps();
+    });
+}
+```
+
+#### Menambahkan Relasi Antar Model
+
+Untuk menghubungkan model `Category` dengan `Post`, kita tambahkan relasi `hasMany` di model `Category` untuk menunjukkan bahwa satu kategori dapat memiliki banyak post. Berikut ini adalah kode relasinya di dalam model `Category`:
+
+```php
+public function posts(): HasMany {
+    return $this->hasMany(Post::class);
+}
+```
+
+Kemudian, tambahkan relasi `belongsTo` di model `Post` untuk menunjukkan bahwa setiap post memiliki satu kategori:
+
+```php
+public function category(): BelongsTo {
+    return $this->belongsTo(Category::class);
+}
+```
+
+#### Membuat Factory untuk Category dan Post
+
+Untuk menghasilkan data kategori acak, kita bisa menggunakan factory. Pada `CategoryFactory`, tambahkan kode untuk membuat data `name` dan `slug` secara acak:
+
+```php
+public function definition(): array
+{
+    return [
+        'name' => fake()->sentence(rand(1, 2), false),
+        'slug' => Str::slug(fake()->sentence(rand(1, 2), false))
+    ];
+}
+```
+
+Kemudian, pada `PostFactory`, tambahkan `category_id` untuk menghubungkan post dengan kategori yang dibuat oleh factory:
+
+```php
+public function definition(): array
+{
+    return [
+        'title' => fake()->sentence(6),
+        'author_id' => User::factory(),
+        'category_id' => Category::factory(),
+        'slug' => Str::slug(fake()->sentence()),
+        'body' => fake()->text()
+    ];
+}
+```
+
+#### Menghubungkan Kategori di Tampilan Post
+
+Agar kategori ditampilkan pada setiap post di halaman web, kita perlu memperbarui tampilan `posts.blade.php`. Tambahkan bagian untuk menampilkan nama kategori dan link-nya:
+
+```php
+<div>
+    By
+    <a href="/authors/{{ $post->author->username }}" class="hover:underline text-base text-gray-700">{{ $post->author->name }}</a> 
+    In
+    <a href="/categories/{{ $post->category->slug }}" class="hover:underline text-base text-gray-700">{{ $post->category->name }}</a> | {{ $post->created_at->diffForHumans()}}
+</div>
+```
+
+### Menambahkan Route Categories
+
+Agar kita bisa menavigasi ke halaman kategori tertentu, kita tambahkan rute baru di `web.php` yang digunakan untuk menampilkan semua artikel dalam kategori tertentu berdasarkan `slug`:
+```php
+Route::get('/categories/{category:slug}', function (Category $category) {
+    return view('posts', ['title' => 'Articles in Category: ' . $category->name, 'posts' => $category->posts]);
+});
+``` 
