@@ -570,7 +570,7 @@ php artisan migrate
    - Menambahkan Relasi di Model User dan Post
    - Menggunakan Relasi di Tinker
    - Memperbaiki Tampilan di View Post
-2. [Post Category](#post--category)
+3. [Post Category](#post--category)
    - 
 
 ### Model Factories
@@ -731,4 +731,7 @@ Route::get('/authors/{user}', function (User $user) {
 });
 ```
 - Menggunakan route model binding untuk mengambil `User` berdasarkan ID yang diberikan di URL.
+
+Sehingga ketika kita mengklik nama author dari sebuah artikel, akan diarahkan ke page sebagai berikut:
+![alt text](/public/img/authorposts.png)
 
