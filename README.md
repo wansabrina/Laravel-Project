@@ -566,6 +566,11 @@ php artisan migrate
    - Membuat Factory Sendiri
    - Menjalankan Migration
 2. [Eloquent Relationship](#eloquent--relationship)
+   - Menyesuaikan PostFactory untuk Relasi
+   - Menambahkan Relasi di Model User dan Post
+   - Menggunakan Relasi di Tinker
+   - Memperbaiki Tampilan di View Post
+2. [Post Category](#post--category)
    - 
 
 ### Model Factories
@@ -636,3 +641,94 @@ Secara default, faker menggunakan data dalam bahasa Inggris (US). Namun, jika in
 ```env
 APP_FAKER_LOCALE=id_ID
 ```
+
+### Eloquent Relationship
+Eloquent Relationships memungkinkan kita untuk mendefinisikan relasi antar tabel di dalam model menggunakan Eloquent ORM. Ini mempermudah pengelolaan dan pengambilan data yang terkait, seperti ketika kita ingin mengetahui siapa penulis dari sebuah postingan atau apa saja artikel yang pernah ditulis oleh seorang pengguna.
+
+Untuk menghubungkan tabel `posts` dengan `users`, kita harus menambahkan kolom `author_id` ke dalam tabel `posts`. Ini dilakukan di file migration:
+
+```php
+public function up(): void
+{
+    Schema::create('posts', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->foreignId('author_id')->constrained(
+            table: 'users',
+            indexName: 'posts_author_id'
+        );
+        $table->string('slug')->unique();
+        $table->text('body');
+        $table->timestamps();
+    });
+}
+```
+- `foreignId('author_id')`: Menambahkan kolom `author_id` yang menjadi foreign key.
+- `constrained('users')`: Menghubungkan `author_id` ke kolom `id` pada tabel `users`.
+
+#### Menyesuaikan PostFactory untuk Relasi
+Pada `PostFactory`, kita perlu menyesuaikan bagaimana cara mengisi `author_id` agar sesuai dengan relasi ke model `User`. Berikut adalah isinya:
+
+```php
+public function definition(): array
+{
+    return [
+        'title' => fake()->sentence(6),
+        'author_id' => User::factory(),
+        'slug' => Str::slug(fake()->sentence()),
+        'body' => fake()->text()
+    ];
+}
+```
+- `User::factory()`: Menggunakan factory `User` untuk membuat user baru dan secara otomatis menghubungkannya dengan `author_id`.
+
+#### Menambahkan Relasi di Model User dan Post
+Untuk mendefinisikan relasi antara `User` dan `Post`, kita perlu menambahkan method pada kedua model tersebut.
+
+Di `User.php`:
+```php
+public function posts(): HasMany
+{
+    return $this->hasMany(Post::class, 'author_id');
+}
+```
+- `hasMany(Post::class, 'author_id')`: Menandakan bahwa satu `User` bisa memiliki banyak `Post`.
+
+Di `Post.php`:
+```php
+public function author(): BelongsTo
+{
+    return $this->belongsTo(User::class);
+}
+```
+- `belongsTo(User::class)`: Menandakan bahwa satu `Post` hanya dimiliki oleh satu `User`.
+
+#### Menggunakan Relasi di Tinker
+Dengan relasi yang sudah ditetapkan, kita bisa melakukan operasi relasional menggunakan Tinker.
+
+- Mengambil user beserta postingan mereka:
+    ```php
+    $user = App\Models\User::first();
+    $user->posts; // Mengambil semua postingan user pertama
+    ```
+- Mengambil postingan dan mengetahui siapa penulisnya:
+    ```php
+    $post = App\Models\Post::first();
+    $post->author; // Mendapatkan user yang menulis postingan ini
+    ```
+#### Memperbaiki Tampilan di View Post
+Untuk menampilkan data relasi di view, kita modifikasi view `posts.blade.php` agar bisa menampilkan nama penulis dengan relasinya.
+
+```blade
+<a href="/authors/{{ $post->author->id }}" class="hover:underline">{{ $post->author->name }}</a>
+``` 
+
+Untuk menampilkan semua postingan oleh seorang penulis tertentu, kita tambahkan route baru:
+
+```php
+Route::get('/authors/{user}', function (User $user) {
+    return view('posts', ['title' => 'Articles by ' . $user->name, 'posts' => $user->posts]);
+});
+```
+- Menggunakan route model binding untuk mengambil `User` berdasarkan ID yang diberikan di URL.
+
