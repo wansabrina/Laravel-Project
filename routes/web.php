@@ -10,6 +10,7 @@ Route::get('/', function () {
 });
 
 Route::get('/posts', function () {
+    $post = Post::latest()->get();
     return view('posts', ['title' => 'Blog', 'posts' => Post::all()]);
 });
 

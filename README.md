@@ -30,7 +30,8 @@ Proyek ini dibuat menggunakan Laravel dan Blade untuk membangun sebuah website d
 1. [Section 2](#2️⃣-section-2)
 2. [Section 3](#3️⃣-section-3)
 3. [Section 4](#4️⃣-section-4)
-3. [Section 5](#5️⃣-section-5)
+4. [Section 5](#5️⃣-section-5)
+5. [Section 6](#6️⃣-section-6)
 
 ## 2️⃣ Section 2
 #### Daftar Isi
@@ -995,3 +996,94 @@ Atau, untuk melakukan migrasi dan seeding dalam satu langkah:
 ```bash
 php artisan migrate:fresh --seed
 ```
+
+## 6️⃣ Section 6
+#### Daftar Isi
+1. [N+1 Problem](#n1-problem)
+   - [Menggunakan Eager Loading di Route](#menggunakan-eager-loading-di-route)
+   - [Eager Loading di Model](#eager-loading-di-model)
+   - [Mencegah Lazy Loading di Seluruh Aplikasi](#mencegah-lazy-loading-di-seluruh-aplikasi)
+2. [Redesign UI](#halaman-web)
+   - [Home](#home)
+3. [Searching](#halaman-web)
+   - [Home](#home)
+4. [Pagination](#halaman-web)
+   - [Home](#home)
+
+### N+1 Problem
+N+1 problem adalah masalah yang terjadi ketika kita melakukan query secara berulang-ulang dalam sebuah loop untuk mengambil data dari tabel yang berelasi. Misalnya, saat kita melakukan query untuk mengambil semua post, lalu untuk setiap post kita mengambil data user atau kategori yang terkait, hal ini menyebabkan terlalu banyak query yang dilakukan. Sebagai contoh, jika kita memiliki 100 post, akan ada 1 query untuk mengambil semua post, dan 100 query tambahan untuk mengambil data user dari setiap post, yang akhirnya menghasilkan total 101 query. Jika ada lebih dari satu relasi, jumlah query dapat meningkat secara drastis.
+
+Masalah ini menyebabkan aplikasi menjadi lambat, terutama ketika jumlah data yang diproses sangat besar. Hal ini karena banyak query kecil yang dikirim ke database secara berulang-ulang, yang tidak efisien.
+
+Solusi untuk mengatasi N+1 problem adalah menggunakan *Eager Loading*, yang memungkinkan kita mengambil data relasi dalam satu query bersama dengan query utama. Ini dapat mengurangi jumlah query secara drastis.
+
+Untuk melihat jumlah query yang dieksekusi oleh aplikasi kita, kita bisa menggunakan Laravel Debugbar. Caranya adalah dengan menginstal paket berikut:
+
+```bash
+composer require barryvdh/laravel-debugbar --dev
+```
+
+Laravel Debugbar akan menampilkan informasi lengkap tentang query yang dijalankan setiap kali halaman dimuat, sehingga kita bisa melihat apakah ada query berlebih akibat N+1 problem.
+
+#### Menggunakan Eager Loading di Route
+
+Kita bisa menggunakan metode `with()` untuk melakukan *Eager Loading* pada relasi di dalam route langsung. Misalnya:
+
+```php
+Route::get('/posts', function () {
+    $posts = Post::with('author', 'category')->latest()->get();
+    return view('posts', ['title' => 'Blog', 'posts' => $posts]);
+});
+
+Route::get('/authors/{user:username}', function (User $user) {
+    $posts = $user->posts->load('category', 'author');
+    return view('posts', ['title' => count($posts) . ' Articles by ' . $user->name, 'posts' => $posts]);
+});
+
+Route::get('/categories/{category:slug}', function (Category $category) {
+    $posts = $category->posts->load('category', 'author');
+    return view('posts', ['title' => 'Articles in Category: ' . $category->name, 'posts' => $posts]);
+});
+```
+
+Kode di atas memastikan bahwa data relasi `author` dan `category` diambil sekaligus dengan post, menghindari query berulang.
+
+#### Eager Loading di Model
+
+Agar lebih efisien dan otomatis, kita juga bisa menambahkan *Eager Loading* langsung di dalam model `Post`. Dengan begitu, setiap kali model `Post` dipanggil, relasi `author` dan `category` akan otomatis dimuat:
+
+```php
+class Post extends Model
+{
+    use HasFactory;
+    protected $fillable = ['title', 'author', 'slug', 'body'];
+
+    protected $with = ['author', 'category']; // Eager load by default
+
+    public function author(): BelongsTo {
+        return $this->belongsTo(User::class);
+    }
+
+    public function category(): BelongsTo {
+        return $this->belongsTo(Category::class);
+    }
+}
+```
+
+Dengan menambahkan properti `$with`, setiap kali model `Post` diambil, relasi `author` dan `category` akan dimuat tanpa perlu memanggil `with()` di route.
+
+#### Mencegah Lazy Loading di Seluruh Aplikasi
+
+Jika ingin memastikan bahwa aplikasi tidak menggunakan *lazy loading* secara tidak sengaja, kita bisa menambahkan kode untuk mencegah *lazy loading* di seluruh aplikasi dalam `AppServiceProvider`:
+
+```php
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        Model::preventLazyLoading(); 
+    }
+}
+```
+
+Dengan metode `preventLazyLoading()`, Laravel akan melemparkan error setiap kali ada lazy loading yang digunakan, sehingga kita bisa mendeteksi dan memperbaikinya.
