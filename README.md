@@ -578,6 +578,8 @@ php artisan migrate
    - [Menghubungkan Kategori di Tampilan Post](#menghubungkan-kategori-di-tampilan-post)
    - [Menambahkan Page/Route Category](#menambahkan-pageroute-category)
 4. [Database Seeder](#database-seeder)
+   - [Membuat Seeder](#membuat-seeder)
+   - [Menjalankan Seeder](#menjalankan-seeder)
 
 >### Model Factories
 Model Factories di Laravel adalah fitur yang memungkinkan kita untuk secara otomatis menggenerate data palsu (dummy) untuk model kita. Ini sangat berguna untuk testing dan seeding database dengan cepat tanpa harus memasukkan data secara manual.
@@ -900,3 +902,96 @@ Route::get('/categories/{category:slug}', function (Category $category) {
 ``` 
 
 >### Database Seeder
+**Seeder** adalah fitur di Laravel yang memungkinkan kita untuk mengisi database dengan data awal atau data dummy. Fitur ini sangat berguna saat mengembangkan aplikasi, karena memungkinkan kita untuk melakukan pengujian dengan data yang realistis tanpa harus menginputnya secara manual setiap kali.
+
+Seeder terletak di direktori `database/seeders`. File utama yang digunakan adalah `DatabaseSeeder.php`, yang berfungsi untuk memanggil seeder-seeder lain untuk model-model seperti `UserSeeder`, `PostSeeder`, dan lainnya.
+
+#### Membuat Seeder
+Untuk membuat seeder baru, bisa menggunakan perintah Artisan berikut di terminal:
+
+```bash
+php artisan make:seeder NamaSeeder
+```
+
+Sebagai contoh, jika ingin membuat `CategorySeeder`, perintahnya adalah:
+
+```bash
+php artisan make:seeder CategorySeeder
+```
+
+Ini akan membuat file seeder baru di folder `database/seeders`, yang kemudian bisa kita sesuaikan untuk memasukkan data ke dalam database.
+
+Berikut adalah contoh file `DatabaseSeeder.php`, yang menjalankan beberapa seeder dan menghasilkan 100 postingan dengan kategori dan pengguna acak:
+
+```php
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $this->call([CategorySeeder::class, UserSeeder::class]);
+
+        Post::factory(100)->recycle([
+            Category::all(),
+            User::all()
+        ])->create();
+    }
+}
+```
+
+1. Memanggil Seeder Lain:
+   Baris `$this->call([CategorySeeder::class, UserSeeder::class]);` menjalankan `CategorySeeder` dan `UserSeeder`, yang mengisi tabel `categories` dan `users`.
+
+2. Post Factory dengan Recycle Data:
+   Baris `Post::factory(100)->recycle([Category::all(), User::all()])->create();` akan menghasilkan 100 post. Post tersebut akan menggunakan kategori dan pengguna yang sudah ada (recycle) secara acak.
+
+`CategorySeeder` digunakan untuk mengisi tabel kategori dengan data yang sudah ditentukan:
+
+```php
+class CategorySeeder extends Seeder
+{
+    public function run(): void
+    {
+        Category::create([
+            'name' => "Machine Learning",
+            'slug' => "machine-learning"
+        ]);           
+    }
+}
+```
+
+Seeder ini membuat lima kategori yang sudah didefinisikan dengan kolom `name` dan `slug`.
+
+`UserSeeder` digunakan untuk mengisi tabel pengguna dengan data pengguna yang sudah ditentukan:
+
+```php
+class UserSeeder extends Seeder
+{
+    public function run(): void
+    {
+        User::create([
+            'name' => 'Wan Sabrina Mayzura',
+            'username' => 'wansabrina',
+            'email' => 'example@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ]);
+    }
+}
+```
+
+Seeder ini membuat lima pengguna yang sudah didefinisikan dengan detail seperti `name`, `username`, `email`, dan `password`.
+
+#### Menjalankan Seeder
+
+Untuk menjalankan semua seeder dan mengisi database, gunakan perintah Artisan berikut:
+
+```bash
+php artisan db:seed
+```
+
+Atau, untuk melakukan migrasi dan seeding dalam satu langkah:
+
+```bash
+php artisan migrate:fresh --seed
+```
