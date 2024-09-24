@@ -1003,8 +1003,10 @@ php artisan migrate:fresh --seed
    - [Menggunakan Eager Loading di Route](#menggunakan-eager-loading-di-route)
    - [Eager Loading di Model](#eager-loading-di-model)
    - [Mencegah Lazy Loading di Seluruh Aplikasi](#mencegah-lazy-loading-di-seluruh-aplikasi)
-2. [Redesign UI](#halaman-web)
-   - [Home](#home)
+2. [Redesign UI](#redesign-ui)
+    - [Penggunaan Komponen Card untuk Blog Post](#penggunaan-komponen-card-untuk-blog-post)
+    - [Safelisting untuk Warna Dinamis Kategori](#safelisting-untuk-warna-dinamis-kategori)
+    - [Redesign Single Post Page](#redesign-single-post-page)
 3. [Searching](#halaman-web)
    - [Home](#home)
 4. [Pagination](#halaman-web)
@@ -1087,3 +1089,36 @@ class AppServiceProvider extends ServiceProvider
 ```
 
 Dengan metode `preventLazyLoading()`, Laravel akan melemparkan error setiap kali ada lazy loading yang digunakan, sehingga kita bisa mendeteksi dan memperbaikinya.
+
+### Redesign UI
+
+#### Penggunaan Komponen Card untuk Blog Post
+Tampilan blog post sekarang menggunakan komponen card yang memberikan tampilan lebih rapi.
+
+![alt text](/public/img/blogcard.png)
+
+#### Safelisting untuk Warna Dinamis Kategori
+Untuk mendukung penggunaan warna dinamis pada kategori blog, **safelist** digunakan untuk memastikan warna latar belakang kategori dapat disesuaikan berdasarkan warna yang ditetapkan di database.
+
+```php
+<span class="bg-{{ $post->category->color }}-100 text-black-900 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-primary-200 dark:text-primary-800">
+    {{ $post->category->name }}
+</span>
+```
+
+Safelist diatur pada konfigurasi `tailwind.config.js`:
+
+```javascript
+safelist: [
+    "bg-red-100",
+    "bg-green-100",
+    "bg-blue-100",
+    "bg-yellow-100",
+    "bg-purple-100",
+],
+```
+
+#### Redesign Single Post Page
+Tampilan halaman **Single Post** juga mengalami pembaruan dengan memanfaatkan component:
+
+![alt text](/public/img/redesignsinglepost.png)
