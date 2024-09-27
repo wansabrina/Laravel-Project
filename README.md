@@ -87,6 +87,9 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     <x-nav-link href="/contact" :active="request()->is('contact')">Contact</x-nav-link>
     ```
 
+    Tampilan Mobile:
+    ![alt text](/public/img/navbarmobile.png)
+
 - #### Header
     ![alt text](public/img/header.png)
 
@@ -1009,11 +1012,13 @@ php artisan migrate:fresh --seed
     - [Redesign Single Post Page](#redesign-single-post-page)
 3. [Searching](#searching)  
    - [Pembuatan Komponen SearchBar](#pembuatan-komponen-searchbar)  
+   - [Pencarian Berdasarkan Filter di Model Post](#pencarian-berdasarkan-filter-di-model-post) 
+   - [Penerapan Routing untuk Pencarian](#penerapan-routing-untuk-pencarian)
    - [Penggunaan Pencarian di Halaman Posts](#penggunaan-pencarian-di-halaman-posts)  
-   - [Pencarian Berdasarkan Filter di Model Post](#pencarian-berdasarkan-filter-di-model-post)  
    - [Hasil Pencarian Kosong](#hasil-pencarian-kosong)
-4. [Pagination](#halaman-web)
-   - [Home](#home)
+4. [Pagination & UI Update](#pagination--ui-update)
+   - [Implementasi Pagination di Routing](#implementasi-pagination-di-routing)
+   - [Penambahan Pagination di View](#penambahan-pagination-di-view)
 
 ### N+1 Problem
 N+1 problem adalah masalah yang terjadi ketika kita melakukan query secara berulang-ulang dalam sebuah loop untuk mengambil data dari tabel yang berelasi. Misalnya, saat kita melakukan query untuk mengambil semua post, lalu untuk setiap post kita mengambil data user atau kategori yang terkait, hal ini menyebabkan terlalu banyak query yang dilakukan. Sebagai contoh, jika kita memiliki 100 post, akan ada 1 query untuk mengambil semua post, dan 100 query tambahan untuk mengambil data user dari setiap post, yang akhirnya menghasilkan total 101 query. Jika ada lebih dari satu relasi, jumlah query dapat meningkat secara drastis.
@@ -1180,7 +1185,7 @@ public function scopeFilter(Builder $query, array $filters): void
 - Filter Berdasarkan Author:
   Bagian ketiga mengecek apakah ada input `author`. Jika ada, query akan mencari semua post yang ditulis oleh author berdasarkan `username` yang dikirimkan.
 
-#### Penerapan Routing untuk Pencarian di `web.php`
+#### Penerapan Routing untuk Pencarian
 
 Pada file `routes/web.php`, pencarian diterapkan melalui route ke halaman `posts`. Route ini menangani berbagai filter seperti judul, kategori, dan author, yang diambil dari parameter request.
 
@@ -1248,3 +1253,56 @@ Untuk menangani kasus ketika hasil pencarian tidak ditemukan, digunakan Blade di
 
 Jika hasil pencarian tidak ditemukan, bagian `@empty` akan menampilkan pesan **"Article not found!"** beserta tautan untuk kembali ke semua post.
 
+
+### Pagination
+
+#### Implementasi Pagination di Routing
+
+Pagination diterapkan di routing untuk membatasi jumlah post yang ditampilkan pada satu halaman. Pada kode berikut, akan menggunakan metode `paginate(12)` untuk membatasi jumlah post yang ditampilkan per halaman menjadi 12 dan memastikan bahwa query string dipertahankan di setiap halaman dengan `withQueryString()`:
+
+```php
+Route::get('/posts', function () {
+    return view('posts', ['title' => 'Blog', 'posts' => Post::filter(request(['search', 'category', 'author']))->latest()->paginate(12)->withQueryString()]);
+});
+```
+- paginate(12): Menampilkan 12 post per halaman.
+- withQueryString(): Memastikan bahwa filter pencarian, kategori, dan author tetap ada saat pengguna berpindah halaman.
+
+#### Penambahan Pagination di View
+
+Pada file `posts.blade.php`, pagination ditambahkan di atas dan bawah grid untuk memudahkan navigasi bagi pengguna, terutama saat mereka berada di bawah halaman. Metode `links()` digunakan untuk menampilkan tautan pagination.
+
+```blade
+<x-layout>
+    <x-slot:title>{{ $title }}</x-slot:title>
+    <x-search-bar />
+
+    {{ $posts->links() }}
+
+    <div class="my-4 py-4 px-4 mx-auto max-w-screen-xl lg:py-5 lg:px-0">
+        <!-- posts content -->
+    </div>
+
+    {{ $posts->links() }}
+
+</x-layout>
+```
+
+**Seluruh UI yang diperbarui pada section 6:**
+
+1. Post Page dengan Redesign UI & Pagination:
+   - Seluruh post
+   
+        ![alt text](/public/img/paginationall.png)
+
+   - Berdasarkan category
+   
+        ![alt text](/public/img/paginationcategory.png)
+
+   - Berdasarkan author
+
+        ![alt text](/public/img/paginationauthor.png)
+
+2. Single Post
+
+    ![alt text](/public/img/singlepostredesign.png)
