@@ -1007,8 +1007,11 @@ php artisan migrate:fresh --seed
     - [Penggunaan Komponen Card untuk Blog Post](#penggunaan-komponen-card-untuk-blog-post)
     - [Safelisting untuk Warna Dinamis Kategori](#safelisting-untuk-warna-dinamis-kategori)
     - [Redesign Single Post Page](#redesign-single-post-page)
-3. [Searching](#halaman-web)
-   - [Home](#home)
+3. [Searching](#searching)  
+   - [Pembuatan Komponen SearchBar](#pembuatan-komponen-searchbar)  
+   - [Penggunaan Pencarian di Halaman Posts](#penggunaan-pencarian-di-halaman-posts)  
+   - [Pencarian Berdasarkan Filter di Model Post](#pencarian-berdasarkan-filter-di-model-post)  
+   - [Hasil Pencarian Kosong](#hasil-pencarian-kosong)
 4. [Pagination](#halaman-web)
    - [Home](#home)
 
@@ -1122,3 +1125,126 @@ safelist: [
 Tampilan halaman **Single Post** juga mengalami pembaruan dengan memanfaatkan component:
 
 ![alt text](/public/img/redesignsinglepost.png)
+
+### Searching
+
+#### Pembuatan Komponen SearchBar
+Untuk memisahkan komponen pencarian menjadi lebih modular, komponen `SearchBar` dibuat dan digunakan untuk menangkap input pencarian yang mendukung filter berdasarkan judul, kategori, dan author. Input tersembunyi (`hidden input`) digunakan untuk menyimpan filter kategori atau author apabila sedang aktif.
+
+```php
+@if(request('category'))
+    <input type="hidden" name="category" value="{{ request('category') }}">
+@endif
+@if(request('author'))
+    <input type="hidden" name="author" value="{{ request('author') }}">
+@endif
+```
+
+- `@if(request('category'))`: Mengecek apakah ada parameter `category` dalam request URL. Jika ada, input tersembunyi dengan `name="category"` akan dibuat untuk menyimpan nilai kategori yang sedang aktif.
+  
+- `@if(request('author'))`: Mengecek apakah ada parameter `author` dalam request URL. Jika ada, input tersembunyi dengan `name="author"` akan dibuat untuk menyimpan nilai author yang sedang aktif.
+
+#### Pencarian Berdasarkan Filter di Model Post
+
+Pada model `Post`, terdapat fungsi `scopeFilter` yang digunakan untuk menangani filter pencarian. Filter ini memungkinkan pencarian berdasarkan judul, kategori, dan author.
+
+```php
+public function scopeFilter(Builder $query, array $filters): void
+{
+    $query->when(
+        $filters['search'] ?? false,
+        fn($query, $search) =>
+        $query->where('title', 'like', '%' . $search . '%')
+    );
+
+    $query->when(
+        $filters['category'] ?? false,
+        fn($query, $category) =>
+        $query->whereHas('category', fn($query) => $query->where('slug', $category))
+    );
+
+    $query->when(
+        $filters['author'] ?? false,
+        fn($query, $author) =>
+        $query->whereHas('author', fn($query) => $query->where('username', $author))
+    );
+}
+```
+
+- Filter Berdasarkan Judul:  
+  Bagian pertama mengecek apakah ada input `search`. Jika ada, sistem akan melakukan pencarian berdasarkan judul (`title`) menggunakan wildcard (`%`), sehingga memungkinkan pencarian sebagian kata dari judul post.
+
+- Filter Berdasarkan Kategori:  
+  Bagian kedua mengecek apakah ada input `category`. Jika ada, query akan menggunakan `whereHas` untuk memastikan pencarian dilakukan pada post yang memiliki kategori yang sesuai dengan slug kategori.
+
+- Filter Berdasarkan Author:
+  Bagian ketiga mengecek apakah ada input `author`. Jika ada, query akan mencari semua post yang ditulis oleh author berdasarkan `username` yang dikirimkan.
+
+#### Penerapan Routing untuk Pencarian di `web.php`
+
+Pada file `routes/web.php`, pencarian diterapkan melalui route ke halaman `posts`. Route ini menangani berbagai filter seperti judul, kategori, dan author, yang diambil dari parameter request.
+
+```php
+Route::get('/posts', function () {
+    return view('posts', ['title' => 'Blog', 'posts' => Post::filter(request(['search', 'category', 'author']))->latest()->get()]);
+});
+```
+
+- Route `/posts`: Rute ini mengarahkan pengguna ke halaman `posts` yang menampilkan semua post atau hasil pencarian sesuai filter.
+- `request(['search', 'category', 'author'])`: Fungsi `request()` digunakan untuk mengambil parameter pencarian yang dikirimkan melalui URL sebagai query string. Query string ini bisa berupa `search` (untuk judul), `category` (untuk kategori), atau `author` (untuk penulis).
+  
+  Contoh URL yang mungkin dihasilkan oleh komponen ini:
+  - `/posts?search=laravel`
+  - `/posts?category=web-development`
+  - `/posts?author=janedoe`
+
+- `Post::filter()`: Metode `filter()` adalah query scope yang sudah didefinisikan di dalam model `Post`. Fungsi ini bertanggung jawab untuk menerapkan filter pencarian berdasarkan parameter yang diterima dari request.
+  
+  - Filter untuk judul (`search`) mencari post dengan judul yang mengandung kata yang dicari.
+  - Filter untuk kategori (`category`) mencari post yang memiliki slug kategori yang sesuai.
+  - Filter untuk author (`author`) mencari post yang ditulis oleh penulis tertentu berdasarkan username.
+
+#### Penggunaan Pencarian di Halaman Posts
+
+Pada halaman `posts.blade.php`, komponen `SearchBar` digunakan dengan menambahkan `x-search-bar` sebagai elemen reusable.
+
+Penjelasan kode pencarian untuk kategori dan author:
+1. Link Pencarian Berdasarkan Kategori
+
+   ```blade
+   <a href="/posts?category={{ $post->category->slug }}">
+   ```
+
+   Tautan ini mengarahkan pengguna ke halaman `posts` dengan query string `category` yang diambil dari `slug` kategori. URL yang dihasilkan akan menampilkan semua post dengan kategori tersebut.
+
+   Contoh URL yang dihasilkan:
+   `/posts?category=web-development`
+
+2. Link Pencarian Berdasarkan Author
+
+   ```blade
+   <a href="/posts?author={{ $post->author->username }}">
+   ```
+
+   Sama halnya dengan kategori, tautan ini mengarahkan pengguna untuk melihat semua post yang ditulis oleh author tertentu. Query string `author` dikirim berdasarkan `username` author.
+
+   Contoh URL yang dihasilkan:
+   `/posts?author=janedoe`
+
+#### Hasil Pencarian Kosong
+
+Untuk menangani kasus ketika hasil pencarian tidak ditemukan, digunakan Blade directive `@forelse` pada `posts.blade.php`.
+
+```blade
+@forelse ($posts as $post)
+    <!-- Tampilkan post jika ada -->
+@empty
+    <div>
+        <p class="font-semibold text-xl my-4">Article not found!</p>
+        <A href="/posts" class="black text-blue-600 hover:underline">&laquo; Back to all posts</A>
+    </div>
+@endforelse
+```
+
+Jika hasil pencarian tidak ditemukan, bagian `@empty` akan menampilkan pesan **"Article not found!"** beserta tautan untuk kembali ke semua post.
+

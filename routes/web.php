@@ -10,8 +10,7 @@ Route::get('/', function () {
 });
 
 Route::get('/posts', function () {
-    $post = Post::latest()->get();
-    return view('posts', ['title' => 'Blog', 'posts' => Post::all()]);
+    return view('posts', ['title' => 'Blog', 'posts' => Post::filter(request(['search', 'category', 'author']))->latest()->get()]);
 });
 
 Route::get('/posts/{post:slug}', function (Post $post) {
