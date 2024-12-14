@@ -88,6 +88,7 @@ Layout utama digunakan sebagai kerangka dasar untuk semua halaman dalam website.
     ```
 
     Tampilan Mobile:
+  
     ![alt text](/public/img/navbarmobile.png)
 
 - #### Header
